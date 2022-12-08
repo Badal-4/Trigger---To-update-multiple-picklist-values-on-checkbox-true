@@ -1,0 +1,37 @@
+public class trgController
+{
+    public static void updateMultiPicklistValues(List<Account> accList)
+    {
+        if(!accList.isEmpty())
+        {
+            for(Account acc : accList)
+            {
+                if(acc.Test_Checkbox__c == true && acc.Multi_Picklist_Field__c == null)
+                {
+                    Schema.DescribeSObjectResult objSchema = Account.sObjectType.getDescribe();
+                    Map<String, Schema.SObjectField> fieldMap = objSchema.fields.getmap();
+                    List<Schema.Picklistentry> picklistFld = fieldmap.get('Multi_Picklist_Field__c').getDescribe().getpicklistValues();     
+                    List<String> pickListValues = new List<String>();
+                    
+                    if(!picklistFld.isEmpty())
+                    {
+                         for(Schema.Picklistentry pl : picklistFld)
+                         {
+                             System.debug('Picklist Values-->'+pl);
+                             pickListValues.add(pl.getLabel());
+                         }
+                    }
+                    
+                    if(!pickListValues.isEmpty())
+                    {
+                      acc.Multi_Picklist_Field__c = String.join(pickListValues, ';');
+                    }
+                }
+                else if(acc.Test_Checkbox__c == true && acc.Multi_Picklist_Field__c != null)
+                {
+                    acc.addError('You cannot select values in multi picklist field with checkbox selected');
+                }
+            }
+        }
+    }
+}
